@@ -5,36 +5,32 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
+/**
+ * Created by localadmin on 07/09/17.
+ */
+
+public class MyMapActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, OnMapReadyCallback {
+        LocationListener {
 
-    private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationClient;
-    String latlng;
+    //Define a request code to send to Google Play services
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private double currentLatitude;
     private double currentLongitude;
-    double myLat, myLng;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +49,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1 * 1000);
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
+                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
     }
 
@@ -109,8 +99,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             //If everything went fine lets get latitude and longitude
             currentLatitude = location.getLatitude();
             currentLongitude = location.getLongitude();
-            myLat = currentLatitude;
-            myLng = currentLongitude;
+
             Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
         }
     }
@@ -148,38 +137,12 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
     }
 
-    /**
-     * If locationChanges change lat and long
-     *
-     *
-     * @param location
-     */
     @Override
     public void onLocationChanged(Location location) {
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
-//        Log.d("Latitude="+currentLatitude,"Longitude="+currentLongitude);
-        myLat = currentLatitude;
-        myLng = currentLongitude;
-//        Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
-
-    }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        Log.d("Latitude="+myLat,"Longitude="+myLng);
-//        LatLng myLocation = new LatLng(12.925478, 77.6854875);
-        LatLng myLocation = new LatLng(myLat, myLng);
-        mMap.addMarker(new MarkerOptions().position(myLocation).title("I am here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(myLocation));
-        Toast.makeText(this, myLat + " WORKS " + myLng + "", Toast.LENGTH_LONG).show();
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLat,myLng), 6.0f));
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.925478, 77.6854875), 6.0f));
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
+        Log.d("Latitude="+currentLatitude,"Longitude="+currentLongitude);
+        Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
     }
 }
+
