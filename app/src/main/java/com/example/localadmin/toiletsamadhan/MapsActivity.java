@@ -22,9 +22,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, OnMapReadyCallback {
+        LocationListener {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -35,7 +35,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     private double currentLatitude;
     private double currentLongitude;
     double myLat, myLng;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,8 +58,11 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
+//        myLat = getIntent().getDoubleExtra("lat",12.92);
+//        myLng = getIntent().getDoubleExtra("long",77.68);
+//        Toast.makeText(this, myLat + " WORKS " + myLng + "", Toast.LENGTH_LONG).show();
+            String txt = getIntent().getStringExtra("sam");
+        Toast.makeText(this, txt, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -111,7 +113,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             currentLongitude = location.getLongitude();
             myLat = currentLatitude;
             myLng = currentLongitude;
-            Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -166,6 +168,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+
         mMap = googleMap;
         Log.d("Latitude="+myLat,"Longitude="+myLng);
 //        LatLng myLocation = new LatLng(12.925478, 77.6854875);
@@ -173,7 +177,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         mMap.addMarker(new MarkerOptions().position(myLocation).title("I am here"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(myLocation));
-        Toast.makeText(this, myLat + " WORKS " + myLng + "", Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, myLat + " WORKS " + myLng + "", Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, myLat + " WORKS " + myLng + "", Toast.LENGTH_LONG).show();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLat,myLng), 6.0f));
 //        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(12.925478, 77.6854875), 6.0f));
     }

@@ -1,5 +1,6 @@
 package com.example.localadmin.toiletsamadhan;
 
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -30,12 +31,13 @@ public class MyMapActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     private double currentLatitude;
     private double currentLongitude;
+    double[] latlng = new double[2];
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_main);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 // The next two lines tell the new client that “this” current class will handle connection stuff
@@ -51,6 +53,14 @@ public class MyMapActivity extends AppCompatActivity implements
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
+        Intent openMap = new Intent(this,MapsActivity.class);
+//        openMap.putExtra("lat",latlng[0]);
+//        openMap.putExtra("long", latlng[1]);
+        openMap.putExtra("sam", ""+currentLatitude + ","+currentLongitude);
+        startActivity(openMap);
+//        Toast.makeText(this, latlng[0] + " and " + latlng[1] + "", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "onCreate end", Toast.LENGTH_LONG).show();
+
     }
 
     @Override
@@ -58,6 +68,7 @@ public class MyMapActivity extends AppCompatActivity implements
         super.onResume();
         //Now lets connect to the API
         mGoogleApiClient.connect();
+        Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -70,7 +81,7 @@ public class MyMapActivity extends AppCompatActivity implements
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
-
+        Toast.makeText(this, "onPause", Toast.LENGTH_LONG).show();
 
     }
 
@@ -99,8 +110,10 @@ public class MyMapActivity extends AppCompatActivity implements
             //If everything went fine lets get latitude and longitude
             currentLatitude = location.getLatitude();
             currentLongitude = location.getLongitude();
-
-            Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+            latlng[0] = currentLongitude;
+            latlng[1] = currentLongitude;
+//            Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "onConnected", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -142,7 +155,8 @@ public class MyMapActivity extends AppCompatActivity implements
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
         Log.d("Latitude="+currentLatitude,"Longitude="+currentLongitude);
-        Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "onLocationChanged", Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
     }
 }
 
