@@ -52,12 +52,6 @@ public class MyMapActivity extends AppCompatActivity implements
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
-
-        Intent openMap = new Intent(this,MapsActivity.class);
-//        openMap.putExtra("lat",latlng[0]);
-//        openMap.putExtra("long", latlng[1]);
-        openMap.putExtra("sam", ""+currentLatitude + ","+currentLongitude);
-        startActivity(openMap);
 //        Toast.makeText(this, latlng[0] + " and " + latlng[1] + "", Toast.LENGTH_LONG).show();
         Toast.makeText(this, "onCreate end", Toast.LENGTH_LONG).show();
 
@@ -113,6 +107,12 @@ public class MyMapActivity extends AppCompatActivity implements
             latlng[0] = currentLongitude;
             latlng[1] = currentLongitude;
 //            Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+            Intent openMap = new Intent(this,MapsActivity.class);
+            openMap.putExtra("lat",latlng[0]);
+            openMap.putExtra("long", latlng[1]);
+//            openMap.putExtra("sam", ""+currentLatitude + ","+currentLongitude);
+            startActivity(openMap);
+            this.finish();
             Toast.makeText(this, "onConnected", Toast.LENGTH_LONG).show();
         }
     }
