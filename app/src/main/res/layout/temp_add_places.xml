@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/placeId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="placeId"
+        android:layout_marginTop="2dp"/>
+
+    <EditText
+        android:id="@+id/placeNameEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="place name"
+        android:layout_marginTop="2dp"/>
+    <EditText
+        android:id="@+id/placeDescEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="description"
+        android:layout_marginTop="2dp"/>
+    <EditText
+        android:id="@+id/ratingsEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="rating"
+        android:layout_marginTop="2dp"/>
+    <EditText
+        android:id="@+id/commentsEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="comments"
+        android:layout_marginTop="2dp"/>
+
+
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginTop="10dp"/>
+    <TextView
+        android:id="@+id/longitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginTop="2dp"/>
+    <TextView
+        android:id="@+id/placeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginTop="2dp"/>
+    <TextView
+        android:id="@+id/placeDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginTop="2dp"/>
+    <TextView
+        android:id="@+id/ratings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginTop="2dp"/>
+    <TextView
+        android:id="@+id/comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginTop="2dp"/>
+
+    <Button
+        android:id="@+id/save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_marginTop="2dp"/>
+
+    <Button
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View"
+        android:layout_marginTop="2dp"/>
+
+
+</LinearLayout>
