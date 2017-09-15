@@ -77,6 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
     private boolean CheckGooglePlayServices() {
@@ -244,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DataTransfer[0] = mMap;
         DataTransfer[1] = url;
         Log.d("onClick", url);
-        GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+        MainActivity.GetNearbyPlacesData getNearbyPlacesData = new MainActivity.GetNearbyPlacesData();
         getNearbyPlacesData.execute(DataTransfer);
         Toast.makeText(MapsActivity.this,"Nearby Hospitals", Toast.LENGTH_LONG).show();
 
@@ -312,7 +314,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        ShowDistanceDuration.setText("Distance:" + distance + ", Duration:" + time);
                         String encodedString = response.body().getRoutes().get(0).getOverviewPolyline().getPoints();
                         List<LatLng> list = decodePoly(encodedString);
-                         mMap.addPolyline(new PolylineOptions()
+                        mMap.addPolyline(new PolylineOptions()
                                 .addAll(list)
                                 .width(5)
                                 .color(Color.RED)
