@@ -2,20 +2,20 @@ package com.example.localadmin.toiletsamadhan;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.localadmin.toiletsamadhan.Pojo.Example;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,21 +24,24 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -56,7 +59,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -73,11 +76,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(this);
 
-    }
 
+    }
 
     private boolean CheckGooglePlayServices() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
@@ -92,20 +94,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     /**
      * Manipulates the map once available.
@@ -119,7 +107,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
 //        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         //Initialize Google Play Services
@@ -216,17 +203,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    //private String getUrl(double latitude, double longitude, String nearbyPlace) {
+    private String getUrl(double latitude, double longitude, String nearbyPlace) {
 
-     //   StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-     //   googlePlacesUrl.append("location=" + latitude + "," + longitude);
-     //   googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
-    //  googlePlacesUrl.append("&type=" + nearbyPlace);
-     //   googlePlacesUrl.append("&sensor=true");
-     //   googlePlacesUrl.append("&key=" + "AIzaSyCbbA3qVBiAhWiDQsNRXKfXZd6xJyaxuoA");
-     //   Log.d("getUrl", googlePlacesUrl.toString());
-     //   return (googlePlacesUrl.toString());
-    //}
+        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=" + latitude + "," + longitude);
+        googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
+        googlePlacesUrl.append("&type=" + nearbyPlace);
+        googlePlacesUrl.append("&sensor=true");
+        googlePlacesUrl.append("&key=" + "AIzaSyCbbA3qVBiAhWiDQsNRXKfXZd6xJyaxuoA");
+        Log.d("getUrl", googlePlacesUrl.toString());
+        return (googlePlacesUrl.toString());
+    }
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -251,25 +238,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
-        mCurrLocationMarker.setDraggable(true);
 
 
         //get the nearby hospital
-        //String url = getUrl(latitude, longitude, "hospital");
-        //bject[] DataTransfer = new Object[2];
-        //DataTransfer[0] = mMap;
-        //DataTransfer[1] = url;
-        //Log.d("onClick", url);
-        //GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-        //getNearbyPlacesData.execute(DataTransfer);
-       // Toast.makeText(MapsActivity.this,"Nearby Hospitals", Toast.LENGTH_LONG).show();
+        String url = getUrl(latitude, longitude, "hospital");
+        Object[] DataTransfer = new Object[2];
+        DataTransfer[0] = mMap;
+        DataTransfer[1] = url;
+        Log.d("onClick", url);
+        MainActivity.GetNearbyPlacesData getNearbyPlacesData = new MainActivity.GetNearbyPlacesData();
+        getNearbyPlacesData.execute(DataTransfer);
+        Toast.makeText(MapsActivity.this,"Nearby Hospitals", Toast.LENGTH_LONG).show();
+
+        //to get the distance and direction
+//        build_retrofit_and_get_response("walking");
+
+
+
+
+
+//        get the nearby Resturant
+//        String urlResturant = getUrl(latitude, longitude, "Restaurant");
+//        Object[] DataTransferResturant = new Object[2];
+//        DataTransferResturant[0] = mMap;
+//        DataTransferResturant[1] = urlResturant;
+//        Log.d("onClick", urlResturant);
+//        GetNearbyPlacesData getNearbyPlacesDataResturant = new GetNearbyPlacesData();
+//        getNearbyPlacesDataResturant.execute(DataTransferResturant);
+//        Toast.makeText(MapsActivity.this,"Nearby Restaurants", Toast.LENGTH_LONG).show();
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        //Toast.makeText(MapsActivity.this,"Your Current Location", Toast.LENGTH_LONG).show();
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        Toast.makeText(MapsActivity.this,"Your Current Location", Toast.LENGTH_LONG).show();
 
         Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f",latitude,longitude));
+        build_retrofit_and_get_response("walking");
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -281,6 +285,89 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    private void build_retrofit_and_get_response(String type) {
+
+        String url = "https://maps.googleapis.com/maps/";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RetrofitMaps service = retrofit.create(RetrofitMaps.class);
+
+        Call<Example> call = service.getDistanceDuration("metric", latitude + "," + longitude, "12.9320154" + "," + "77.6852763", type);
+
+        call.enqueue(new Callback<Example>() {
+            @Override
+            public void onResponse(Response<Example> response, Retrofit retrofit) {
+
+                try {
+                    //Remove previous line from map
+//                    if (line != null) {
+//                        line.remove();
+//                    }
+                    // This loop will go through all the results and add marker on each location.
+                    for (int i = 0; i < response.body().getRoutes().size(); i++) {
+                        String distance = response.body().getRoutes().get(i).getLegs().get(i).getDistance().getText();
+                        String time = response.body().getRoutes().get(i).getLegs().get(i).getDuration().getText();
+//                        ShowDistanceDuration.setText("Distance:" + distance + ", Duration:" + time);
+                        String encodedString = response.body().getRoutes().get(0).getOverviewPolyline().getPoints();
+                        List<LatLng> list = decodePoly(encodedString);
+                        mMap.addPolyline(new PolylineOptions()
+                                .addAll(list)
+                                .width(5)
+                                .color(Color.RED)
+                                .geodesic(true)
+                        );
+                    }
+                } catch (Exception e) {
+                    Log.d("onResponse", "There is an error");
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("onFailure", t.toString());
+            }
+        });
+
+    }
+
+
+    private List<LatLng> decodePoly(String encoded) {
+        List<LatLng> poly = new ArrayList<LatLng>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng( (((double) lat / 1E5)),
+                    (((double) lng / 1E5) ));
+            poly.add(p);
+        }
+
+        return poly;
+    }
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
