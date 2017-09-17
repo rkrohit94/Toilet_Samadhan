@@ -1,9 +1,12 @@
 package com.example.localadmin.toiletsamadhan;
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -90,12 +93,24 @@ public class MainActivity extends AppCompatActivity
     View bottomSheet;
     BottomSheetBehavior behavior;
     private FusedLocationProviderClient mFusedLocationClient;
+    boolean internet_connection(){
+        //Check if connected to internet, output accordingly
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         behavior = BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet));
+
+
 //        bottomSheet = findViewById(R.id.design_bottom_sheet);
 //        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
         setSupportActionBar(toolbar);
@@ -136,7 +151,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
+        if (internet_connection()) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -155,7 +170,14 @@ public class MainActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+            Log.d("onCreate","internet available.");
+        }
+        else {
+            Log.d("onCreate", "Finishing test case since No Internet connection available");
+            Toast.makeText(MainActivity.this,"No Internet Connection", Toast.LENGTH_LONG).show();
 
+
+        }
 
 
     }
@@ -394,6 +416,7 @@ public class MainActivity extends AppCompatActivity
             }
 
         });
+
 
         //stop location updates
         if (mGoogleApiClient != null) {
