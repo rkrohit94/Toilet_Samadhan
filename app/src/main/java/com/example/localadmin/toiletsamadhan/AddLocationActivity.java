@@ -161,6 +161,7 @@ public class AddLocationActivity extends AppCompatActivity implements GoogleApiC
                                 db.addContact(new Location(latitude, longitude, mEdit.getText().toString(),address,String.valueOf(ratingbar.getRating())));
                                 Intent intent= new Intent(AddLocationActivity.this, MainActivity.class);
                                 startActivity(intent);
+                                finish();
                             }
                         });
                 /**
