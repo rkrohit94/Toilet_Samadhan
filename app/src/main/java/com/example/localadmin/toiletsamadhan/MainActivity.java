@@ -425,19 +425,9 @@ public class MainActivity extends AppCompatActivity
                 build_retrofit_and_get_response("walking",arg0.getPosition().latitude, arg0.getPosition().longitude);
                 Log.d(arg0.getTitle()+" ","  "+" "+"marker clicked");
                 address = arg0.getTitle();
-//                Toast.makeText(MainActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
-//                if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                    showDistance.setText("Distance: "+distance);
-//                    showTime.setText("Eta: "+time);
-//                    showAddress.setPadding(0,30,0,0);
-//                    showAddress.setText("Address: "+address);
-
-//                } else {
-////                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                }
-
-                return true;
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                mMap.setPadding(0,0,0,bottomSheet.getHeight());
+                return false;
             }
 
         });
