@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity
     Polyline line;
 //    final BottomSheetBehavior behavior;
     View bottomSheet;
+    TextView showDistance,showTime,showAddress;
+    String distance="",time="",address="";
     BottomSheetBehavior behavior;
     private FusedLocationProviderClient mFusedLocationClient;
     boolean internet_connection(){
@@ -109,7 +111,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         behavior = BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet));
-
+        showDistance  = (TextView) findViewById(R.id.showDistance);
+        showTime  = (TextView) findViewById(R.id.showEta);
+        showAddress  = (TextView) findViewById(R.id.showAddress);
 
 //        bottomSheet = findViewById(R.id.design_bottom_sheet);
 //        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
@@ -411,7 +415,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onMarkerClick(Marker arg0) {
-                TextView latLongDisplay = (TextView) findViewById(R.id.bottomsheet_text);
                 if(arg0 != null ); // if marker  source is clicked
                 double destinationLatitude=arg0.getPosition().latitude;
                 double destinationLongitude=arg0.getPosition().longitude;
@@ -421,14 +424,11 @@ public class MainActivity extends AppCompatActivity
                 }
                 build_retrofit_and_get_response("walking",arg0.getPosition().latitude, arg0.getPosition().longitude);
                 Log.d(arg0.getTitle()+" ","  "+" "+"marker clicked");
+                address = arg0.getTitle();
 //                Toast.makeText(MainActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
-
                 if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
-                latLongDisplay.setText(arg0.getTitle());
-                //check
-                mMap.setPadding(0, 0, 0, bottomSheet.getHeight());
                 return false;
             }
 
@@ -485,14 +485,14 @@ public class MainActivity extends AppCompatActivity
 //                    }
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < response.body().getRoutes().size(); i++) {
-                        String distance = response.body().getRoutes().get(i).getLegs().get(i).getDistance().getText();
-                        String time = response.body().getRoutes().get(i).getLegs().get(i).getDuration().getText();
+                        distance = response.body().getRoutes().get(i).getLegs().get(i).getDistance().getText();
+                        time = response.body().getRoutes().get(i).getLegs().get(i).getDuration().getText();
 //                        ShowDistanceDuration.setText("Distance:" + distance + ", Duration:" + time);
                         String encodedString = response.body().getRoutes().get(0).getOverviewPolyline().getPoints();
                         List<LatLng> list = decodePoly(encodedString);
                          line= mMap.addPolyline(new PolylineOptions()
                                 .addAll(list)
-                                .width(10).color(Color.RED)
+                                .width(12).color(Color.BLUE)
                                 .geodesic(true)
                         );
                     }
@@ -500,6 +500,10 @@ public class MainActivity extends AppCompatActivity
                     Log.d("onResponse", "There is an error");
                     e.printStackTrace();
                 }
+                showDistance.setText("Distance: "+distance);
+                showTime.setText("Eta: "+time);
+                showAddress.setPadding(0,50,0,0);
+                showAddress.setText("Address: "+address);
             }
 
             @Override
