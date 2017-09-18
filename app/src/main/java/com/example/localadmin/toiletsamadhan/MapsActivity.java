@@ -273,7 +273,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(MapsActivity.this,"Your Current Location", Toast.LENGTH_LONG).show();
 
         Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f",latitude,longitude));
-        build_retrofit_and_get_response("walking");
+
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -281,57 +281,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d("onLocationChanged", "Removing Location Updates");
         }
         Log.d("onLocationChanged", "Exit");
-
-    }
-
-
-    private void build_retrofit_and_get_response(String type) {
-
-        String url = "https://maps.googleapis.com/maps/";
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RetrofitMaps service = retrofit.create(RetrofitMaps.class);
-
-        Call<Example> call = service.getDistanceDuration("metric", latitude + "," + longitude, "12.9320154" + "," + "77.6852763", type);
-
-        call.enqueue(new Callback<Example>() {
-            @Override
-            public void onResponse(Response<Example> response, Retrofit retrofit) {
-
-                try {
-                    //Remove previous line from map
-//                    if (line != null) {
-//                        line.remove();
-//                    }
-                    // This loop will go through all the results and add marker on each location.
-                    for (int i = 0; i < response.body().getRoutes().size(); i++) {
-                        String distance = response.body().getRoutes().get(i).getLegs().get(i).getDistance().getText();
-                        String time = response.body().getRoutes().get(i).getLegs().get(i).getDuration().getText();
-//                        ShowDistanceDuration.setText("Distance:" + distance + ", Duration:" + time);
-                        String encodedString = response.body().getRoutes().get(0).getOverviewPolyline().getPoints();
-                        List<LatLng> list = decodePoly(encodedString);
-                        mMap.addPolyline(new PolylineOptions()
-                                .addAll(list)
-                                .width(5)
-                                .color(Color.RED)
-                                .geodesic(true)
-                        );
-                    }
-                } catch (Exception e) {
-                    Log.d("onResponse", "There is an error");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Log.d("onFailure", t.toString());
-            }
-        });
 
     }
 

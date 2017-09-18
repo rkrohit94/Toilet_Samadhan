@@ -1,9 +1,12 @@
 package com.example.localadmin.toiletsamadhan;
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -88,12 +91,26 @@ public class MainActivity extends AppCompatActivity
     Polyline line;
 //    final BottomSheetBehavior behavior;
     View bottomSheet;
+    BottomSheetBehavior behavior;
     private FusedLocationProviderClient mFusedLocationClient;
+    boolean internet_connection(){
+        //Check if connected to internet, output accordingly
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        behavior = BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet));
+
+
 //        bottomSheet = findViewById(R.id.design_bottom_sheet);
 //        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
         setSupportActionBar(toolbar);
@@ -134,7 +151,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
+        if (internet_connection()) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -153,7 +170,14 @@ public class MainActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+            Log.d("onCreate","internet available.");
+        }
+        else {
+            Log.d("onCreate", "Finishing test case since No Internet connection available");
+            Toast.makeText(MainActivity.this,"No Internet Connection", Toast.LENGTH_LONG).show();
 
+
+        }
 
 
     }
@@ -161,8 +185,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+        }else if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+
         } else {
             super.onBackPressed();
         }
@@ -219,6 +247,16 @@ public class MainActivity extends AppCompatActivity
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+        mMap.setOnMapClickListener(new OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                }
+            }
+        });
+
 
 
     }
@@ -267,6 +305,7 @@ public class MainActivity extends AppCompatActivity
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
         bottomSheet = findViewById(R.id.design_bottom_sheet);
+
     }
 
     private String getUrl(double latitude, double longitude, String nearbyPlace) {
@@ -291,7 +330,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("onLocationChanged", "entered");
 
         Log.d("BottomSheetBehavior",""+BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet)));
-        final BottomSheetBehavior behavior = BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet));
+//        final BottomSheetBehavior behavior = BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet));
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -332,7 +371,7 @@ public class MainActivity extends AppCompatActivity
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
 
         //move map camera
@@ -368,18 +407,16 @@ public class MainActivity extends AppCompatActivity
                 build_retrofit_and_get_response("walking",arg0.getPosition().latitude, arg0.getPosition().longitude);
                 Log.d(arg0.getTitle()+" ","  "+" "+"marker clicked");
 //                Toast.makeText(MainActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
+
                 if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-                    latLongDisplay.setText(arg0.getTitle());
-
-                } else {
-                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
+                latLongDisplay.setText(arg0.getTitle());
                 return true;
             }
 
         });
+
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -421,8 +458,7 @@ public class MainActivity extends AppCompatActivity
                         List<LatLng> list = decodePoly(encodedString);
                          line= mMap.addPolyline(new PolylineOptions()
                                 .addAll(list)
-                                .width(10)
-                                .color(Color.RED)
+                                .width(10).color(Color.RED)
                                 .geodesic(true)
                         );
                     }
