@@ -12,6 +12,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.localadmin.toiletsamadhan.Pojo.Location;
@@ -36,6 +39,11 @@ public class AddLocationActivity extends AppCompatActivity implements GoogleApiC
     private int PLACE_PICKER_REQUEST = 1;
     private TextView tvPlaceDetails;
     private FloatingActionButton fabPickPlace;
+    private Button mButton;
+    private EditText mEdit;
+    private String latitude;
+    private String longitude;
+    private String address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +119,7 @@ public class AddLocationActivity extends AppCompatActivity implements GoogleApiC
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Snackbar.make(fabPickPlace, connectionResult.getErrorMessage() + "", Snackbar.LENGTH_LONG).show();
+//        Snackbar.make(fabPickPlace, connectionResult.getErrorMessage() + "", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -121,32 +129,46 @@ public class AddLocationActivity extends AppCompatActivity implements GoogleApiC
                 Place place = PlacePicker.getPlace(data, this);
                 StringBuilder stBuilder = new StringBuilder();
                 String placename = String.format("%s", place.getName());
-                String latitude = String.valueOf(place.getLatLng().latitude);
-                String longitude = String.valueOf(place.getLatLng().longitude);
-                String address = String.format("%s", place.getAddress());
-                stBuilder.append("Name: ");
-                stBuilder.append(placename);
-                stBuilder.append("\n");
-                stBuilder.append("Latitude: ");
-                stBuilder.append(latitude);
-                stBuilder.append("\n");
-                stBuilder.append("Logitude: ");
-                stBuilder.append(longitude);
-                stBuilder.append("\n");
-                stBuilder.append("Address: ");
+                 latitude = String.valueOf(place.getLatLng().latitude);
+                 longitude = String.valueOf(place.getLatLng().longitude);
+                 address = String.format("%s", place.getAddress());
+//                stBuilder.append("Name: ");
+//                stBuilder.append(placename);
+//                stBuilder.append("\n");
+//                stBuilder.append("Latitude: ");
+//                stBuilder.append(latitude);
+//                stBuilder.append("\n");
+//                stBuilder.append("Logitude: ");
+//                stBuilder.append(longitude);
+//                stBuilder.append("\n");
+//                stBuilder.append("Address: ");
                 stBuilder.append(address);
                 tvPlaceDetails.setText(stBuilder.toString());
                 DatabaseHandler db = new DatabaseHandler(this);
 
+
+                mButton = (Button)findViewById(R.id.addToilet);
+                mEdit   = (EditText)findViewById(R.id.nameOfPlace);
+
+                mButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            public void onClick(View view) {
+                                Log.v("EditText", mEdit.getText().toString());
+                                DatabaseHandler db = new DatabaseHandler(AddLocationActivity.this);
+                                db.addContact(new Location(latitude, longitude, mEdit.getText().toString(),address,"2"));
+                                Intent intent= new Intent(AddLocationActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            }
+                        });
                 /**
                  * CRUD Operations
                  * */
                 // Inserting Contacts
-                Log.d("Insert: ", "Inserting ..");
-                db.addContact(new Location(latitude, longitude, placename,address,"2"));
+//                Log.d("Insert: ", "Inserting ..");
+//                db.addContact(new Location(latitude, longitude, placename,address,"2"));
 
 
-                Log.d("Reading: ", "Reading all contacts..");
+                Log.d("Reading: ", "Reading all location..");
                 List<Location> contacts = db.getAllLocations();
 
                 for (Location cn : contacts) {

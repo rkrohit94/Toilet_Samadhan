@@ -6,9 +6,7 @@ import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Query;
 
-/**
- * Created by navneet on 17/7/16.
- */
+
 public interface RetrofitMaps {
 
     /*

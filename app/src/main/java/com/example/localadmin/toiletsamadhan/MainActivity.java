@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity
             }
 
         });
-
+this
 
         //stop location updates
         if (mGoogleApiClient != null) {
