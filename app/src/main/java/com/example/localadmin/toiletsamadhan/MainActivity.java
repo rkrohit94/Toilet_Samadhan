@@ -510,7 +510,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 showDistance.setText("Distance: "+distance);
                 showTime.setText("Eta: "+time);
-                showAddress.setPadding(0,30,0,0);
+                showAddress.setPadding(0,50,0,0);
                 showAddress.setText("Address: "+address);
             }
 
