@@ -1,59 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.localadmin.toiletsamadhan.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main"
+    >
 
-<RelativeLayout
-android:id="@+id/mapLayout"
-android:layout_width="0dp"
-android:layout_height="wrap_content"
-app:layout_constraintBottom_toBottomOf="parent"
-app:layout_constraintLeft_toLeftOf="parent"
-tools:layout_editor_absoluteY="0dp"
-tools:layout_editor_absoluteX="8dp">
 
-<!--<EditText-->
-<!--android:id="@+id/serachText"-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:ems="10"-->
-<!--android:inputType="textPersonName"-->
-<!--android:hint="Enter Place"-->
-<!--android:layout_marginLeft="5dp"/>-->
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.localadmin.toiletsamadhan.MapsActivity"
+        tools:layout_editor_absoluteX="8dp"
+        android:layout_alignParentStart="true"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintTop_toTopOf="parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true" />
+    <!--</android.support.v4.widget.NestedScrollView>-->
 
-<!--<Button-->
-<!--android:id="@+id/search"-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:text="Search"-->
-<!--android:onClick="onMapSearch"-->
-<!--android:layout_toRightOf="@id/search"/>-->
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:elevation="4dp"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="358dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.localadmin.toiletsamadhan.MapsActivity"
-    tools:layout_editor_absoluteY="67dp"
-    tools:layout_editor_absoluteX="0dp"
-    android:layout_alignParentBottom="true"
-    android:layout_alignParentStart="true" />
+        <RelativeLayout
+            android:id="@+id/design_bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/map"
+            android:background="@color/bottomSheetColor"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="0dp"
+            app:elevation="4dp"
+            app:layout_behavior="@string/bottom_sheet_behavior">
 
-<!--<AutoCompleteTextView-->
-<!--android:id="@+id/searchText"-->
-<!--android:layout_width="wrap_content"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:layout_below="@+id/search"-->
-<!--android:layout_marginTop="15dp"-->
-<!--android:layout_toEndOf="@+id/search"-->
-<!--android:text="AutoCompleteTextView" />-->
+            <TextView
+                android:id="@+id/bottomsheet_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="12dp"
+                android:text="Introducing Bottom Sheets"
+                android:textColor="#FFFFFF" />
+
+        </RelativeLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+    <!--</android.support.constraint.ConstraintLayout>-->
 </RelativeLayout>
-</android.support.constraint.ConstraintLayout>

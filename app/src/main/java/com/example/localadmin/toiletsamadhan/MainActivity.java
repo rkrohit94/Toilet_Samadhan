@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -212,7 +215,7 @@ public class MainActivity extends AppCompatActivity
             startActivity( intent );
         } else if (id == R.id.nav_gallery) {
             Log.i("my", "mainactivity");
-            Intent i = new Intent( getApplicationContext(), MapsActivity.class);
+            Intent i = new Intent( getApplicationContext(), AddLocationActivity.class);
             startActivity( i );
         } else if (id == R.id.nav_send) {
             Intent in = new Intent( getApplicationContext(), AboutUsActivity.class);
@@ -257,6 +260,36 @@ public class MainActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         Log.d("onLocationChanged", "entered");
 
+        Log.d("BottomSheetBehavior",""+ BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet)));
+        final BottomSheetBehavior behavior = BottomSheetBehavior.from(findViewById(R.id.design_bottom_sheet));
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_DRAGGING");
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_SETTLING");
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_EXPANDED");
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_COLLAPSED");
+                        break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_HIDDEN");
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                Log.i("BottomSheetCallback", "slideOffset: " + slideOffset);
+            }
+        });
+
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
@@ -278,7 +311,7 @@ public class MainActivity extends AppCompatActivity
         //Toast.makeText(MapsActivity.this,"Your Current Location", Toast.LENGTH_LONG).show();
 
         //get the nearby hospital
-        String hospitalurl = getUrl(latitude, longitude, "shopping_mall");
+        String hospitalurl = getUrl(latitude, longitude, "gas_station");
         Object[] dataTransfer = new Object[2];
         dataTransfer[0] = mMap;
         dataTransfer[1] = hospitalurl;
@@ -287,14 +320,15 @@ public class MainActivity extends AppCompatActivity
         getnearbyPlacesData.execute(dataTransfer);
         Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f",latitude,longitude));
 
+        //add marker from the database
+        addSavedMarker();
         //show the direction on the map
-
-
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
 
             @Override
             public boolean onMarkerClick(Marker arg0) {
+                TextView latLongDisplay = (TextView) findViewById(R.id.bottomsheet_text);
                 if(arg0 != null ); // if marker  source is clicked
                 double destinationLatitude=arg0.getPosition().latitude;
                 double destinationLongitude=arg0.getPosition().longitude;
@@ -303,7 +337,15 @@ public class MainActivity extends AppCompatActivity
                 }
                 build_retrofit_and_get_response("walking",arg0.getPosition().latitude, arg0.getPosition().longitude);
                 Log.d(arg0.getTitle()+" ","  "+" "+"marker clicked");
-//                Toast.makeText(menu.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
+//                Toast.makeText(MainActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
+//                if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                    latLongDisplay.setText(arg0.getTitle());
+
+//                } else {
+////                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                }
                 return true;
             }
 
@@ -315,7 +357,24 @@ public class MainActivity extends AppCompatActivity
             Log.d("onLocationChanged", "Removing Location Updates");
         }
         Log.d("onLocationChanged", "Exit");
+    }
 
+    private void addSavedMarker() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        List<com.example.localadmin.toiletsamadhan.Pojo.Location> contacts = db.getAllLocations();
+
+        for (com.example.localadmin.toiletsamadhan.Pojo.Location cn : contacts) {
+
+            LatLng latLng = new LatLng(Double.parseDouble(cn.getLatitude()), Double.parseDouble(cn.getLongitude()));
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title(cn.getName()+" "+cn.getAddress());
+            mMap.addMarker(markerOptions);
+            String log = "Id: " + cn.getId() + " ,Name: " + cn.getName() + " ,Latitude: " + cn.getLatitude()+  " ,longitude: " + cn.getLongitude()+ " ,Address: " + cn.getAddress();
+            // Writing Contacts to log
+            Log.d("Name: ", log);
+
+        }
     }
 
     private void build_retrofit_and_get_response(String type, double destinationLatitude, double destinationLongitude) {
