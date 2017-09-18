@@ -178,7 +178,10 @@ public class MainActivity extends AppCompatActivity
         }
         else {
             Log.d("onCreate", "Finishing test case since No Internet connection available");
-            Toast.makeText(MainActivity.this,"No Internet Connection", Toast.LENGTH_LONG).show();
+//            Intent intent = new Intent(Intent.ACTION_MAIN);
+//            intent.setClassName("com.android.phone", "com.android.phone.Settings");
+//            startActivity(intent);
+            Toast.makeText(MainActivity.this,"Turn on your Data!!", Toast.LENGTH_LONG).show();
 
 
         }
@@ -288,6 +291,7 @@ public class MainActivity extends AppCompatActivity
             Log.i("my", "mainactivity");
             Intent i = new Intent( getApplicationContext(), AddLocationActivity.class);
             startActivity( i );
+            finish();
         } else if (id == R.id.nav_send) {
             Intent in = new Intent( getApplicationContext(), AboutUsActivity.class);
             startActivity( in );
