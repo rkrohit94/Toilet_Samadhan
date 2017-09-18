@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.localadmin.toiletsamadhan.Pojo.Location;
@@ -44,6 +45,7 @@ public class AddLocationActivity extends AppCompatActivity implements GoogleApiC
     private String latitude;
     private String longitude;
     private String address;
+    private RatingBar ratingbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,13 +151,14 @@ public class AddLocationActivity extends AppCompatActivity implements GoogleApiC
 
                 mButton = (Button)findViewById(R.id.addToilet);
                 mEdit   = (EditText)findViewById(R.id.nameOfPlace);
+                ratingbar= (RatingBar)findViewById(R.id.ratingBar);
 
                 mButton.setOnClickListener(
                         new View.OnClickListener() {
                             public void onClick(View view) {
                                 Log.v("EditText", mEdit.getText().toString());
                                 DatabaseHandler db = new DatabaseHandler(AddLocationActivity.this);
-                                db.addContact(new Location(latitude, longitude, mEdit.getText().toString(),address,"2"));
+                                db.addContact(new Location(latitude, longitude, mEdit.getText().toString(),address,String.valueOf(ratingbar.getRating())));
                                 Intent intent= new Intent(AddLocationActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -173,7 +176,7 @@ public class AddLocationActivity extends AppCompatActivity implements GoogleApiC
                 List<Location> contacts = db.getAllLocations();
 
                 for (Location cn : contacts) {
-                    String log = "Id: " + cn.getId() + " ,Name: " + cn.getName() + " ,Latitude: " + cn.getLatitude()+  " ,longitude: " + cn.getLongitude()+ " ,Address: " + cn.getAddress();
+                    String log = "Id: " + cn.getId() + " ,Name: " + cn.getName() + " ,Latitude: " + cn.getLatitude()+  " ,longitude: " + cn.getLongitude()+ " ,Address: " + cn.getRating();
                     // Writing Contacts to log
                     Log.d("Name: ", log);
 

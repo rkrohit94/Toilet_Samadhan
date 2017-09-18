@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.pm.PackageManager;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity
     Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
+    private float rating=0.0f;
     Polyline line;
 //    final BottomSheetBehavior behavior;
     View bottomSheet;
@@ -95,6 +97,8 @@ public class MainActivity extends AppCompatActivity
     String distance="",time="",address="";
     BottomSheetBehavior behavior;
     private FusedLocationProviderClient mFusedLocationClient;
+    private RatingBar showRating;
+
     boolean internet_connection(){
         //Check if connected to internet, output accordingly
         ConnectivityManager cm =
@@ -114,6 +118,10 @@ public class MainActivity extends AppCompatActivity
         showDistance  = (TextView) findViewById(R.id.showDistance);
         showTime  = (TextView) findViewById(R.id.showEta);
         showAddress  = (TextView) findViewById(R.id.showAddress);
+        showRating =(RatingBar)findViewById(R.id.showRating);
+
+        showRating.setNumStars(5);
+        showRating.setMax(5);
 
 //        bottomSheet = findViewById(R.id.design_bottom_sheet);
 //        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
@@ -422,15 +430,25 @@ public class MainActivity extends AppCompatActivity
                 if(arg0 != null ); // if marker  source is clicked
                 double destinationLatitude=arg0.getPosition().latitude;
                 double destinationLongitude=arg0.getPosition().longitude;
-
+//                float userRating = 0.0f;
                 if(line!=null){
                     line.remove();
                 }
                 build_retrofit_and_get_response("walking",arg0.getPosition().latitude, arg0.getPosition().longitude);
                 Log.d(arg0.getTitle()+" ","  "+" "+"marker clicked");
                 address = arg0.getTitle();
+                String s=arg0.getSnippet();
+                if(s==null){
+                    rating=4.5f;
+                }
+                else {
+                    rating = Float.parseFloat(arg0.getSnippet());
+                }
+//                Toast.makeText(MainActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
+
                 behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 mMap.setPadding(0,0,0,bottomSheet.getHeight());
+
                 return false;
             }
 
@@ -455,8 +473,10 @@ public class MainActivity extends AppCompatActivity
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.title(cn.getName()+" "+cn.getAddress());
+            markerOptions.snippet(cn.getRating());
             mMap.addMarker(markerOptions);
-            String log = "Id: " + cn.getId() + " ,Name: " + cn.getName() + " ,Latitude: " + cn.getLatitude()+  " ,longitude: " + cn.getLongitude()+ " ,Address: " + cn.getAddress();
+
+            String log = "Id: " + cn.getId() + " ,Name: " + cn.getName() + " ,Latitude: " + cn.getLatitude()+  " ,longitude: " + cn.getLongitude()+ " ,Address: " + cn.getRating();
             // Writing Contacts to log
             Log.d("Name: ", log);
 
@@ -506,6 +526,11 @@ public class MainActivity extends AppCompatActivity
                 showTime.setText("Eta: "+time);
                 showAddress.setPadding(0,50,0,0);
                 showAddress.setText("Address: "+address);
+//                if(rating){
+//
+//                }
+                showRating.setRating(rating);
+
             }
 
             @Override
@@ -594,6 +619,7 @@ public class MainActivity extends AppCompatActivity
                 markerOptions.position(latLng);
                 markerOptions.title(placeName + " : " + vicinity);
                 mMap.addMarker(markerOptions);
+                markerOptions.snippet("5");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 //move map camera
                 //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
