@@ -314,6 +314,8 @@ public class MainActivity extends AppCompatActivity
         googlePlacesUrl.append("location=" + latitude + "," + longitude);
         googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
         googlePlacesUrl.append("&type=" + nearbyPlace);
+        if (nearbyPlace != "shopping_mall")
+            googlePlacesUrl.append("&keyword=toilet");
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=" + "AIzaSyCbbA3qVBiAhWiDQsNRXKfXZd6xJyaxuoA");
         Log.d("getUrl", googlePlacesUrl.toString());
@@ -377,11 +379,11 @@ public class MainActivity extends AppCompatActivity
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         //Toast.makeText(MapsActivity.this,"Your Current Location", Toast.LENGTH_LONG).show();
 
         //get the nearby hospital
-        String hospitalurl = getUrl(latitude, longitude, "gas_station");
+        String hospitalurl = getUrl(latitude, longitude, "shopping_mall");
         Object[] dataTransfer = new Object[2];
         dataTransfer[0] = mMap;
         dataTransfer[1] = hospitalurl;
@@ -389,6 +391,17 @@ public class MainActivity extends AppCompatActivity
         GetNearbyPlacesData getnearbyPlacesData = new GetNearbyPlacesData();
         getnearbyPlacesData.execute(dataTransfer);
         Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f",latitude,longitude));
+
+        String url = getUrl(latitude, longitude, "point_of_interest");
+        Object[] DataTransfer = new Object[2];
+        DataTransfer[0] = mMap;
+        DataTransfer[1] = url;
+        Log.d("onClick", url);
+        GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+        getNearbyPlacesData.execute(DataTransfer);
+        // Toast.makeText(MapsActivity.this,"Nearby Hospitals", Toast.LENGTH_LONG).show();
+        Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f",latitude,longitude));
+        //show the direction on the map
 
         //add marker from the database
         addSavedMarker();
@@ -402,22 +415,21 @@ public class MainActivity extends AppCompatActivity
                 if(arg0 != null ); // if marker  source is clicked
                 double destinationLatitude=arg0.getPosition().latitude;
                 double destinationLongitude=arg0.getPosition().longitude;
+
                 if(line!=null){
                     line.remove();
                 }
                 build_retrofit_and_get_response("walking",arg0.getPosition().latitude, arg0.getPosition().longitude);
                 Log.d(arg0.getTitle()+" ","  "+" "+"marker clicked");
 //                Toast.makeText(MainActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
-//                if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+
+                if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-                    latLongDisplay.setText(arg0.getTitle());
-
-//                } else {
-////                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                }
-
-                return true;
+                }
+                latLongDisplay.setText(arg0.getTitle());
+                //check
+                mMap.setPadding(0, 0, 0, bottomSheet.getHeight());
+                return false;
             }
 
         });
@@ -578,8 +590,8 @@ public class MainActivity extends AppCompatActivity
                 mMap.addMarker(markerOptions);
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 //move map camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
 
 //            return nearbyPlacesList.get(1);

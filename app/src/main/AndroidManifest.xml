@@ -37,12 +37,7 @@
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
-        <activity
-            android:name=".AboutUsActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
 
-        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -59,6 +54,10 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
+        </activity>
+        <activity
+            android:name="AboutUsActivity"
+            android:label="About Us">
         </activity>
     </application>
 
